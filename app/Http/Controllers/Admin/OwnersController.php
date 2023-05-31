@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Owner;
+use Carbon\Carbon;
 
 class OwnersController extends Controller
 {
@@ -19,7 +21,9 @@ class OwnersController extends Controller
 
     public function index()
     {
-        dd('オーナーです。');
+        $e_all = Owner::get();
+
+        return view('admin.owners.index',compact('e_all'));
     }
 
     /**

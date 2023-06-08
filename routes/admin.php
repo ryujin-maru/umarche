@@ -24,9 +24,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('admin.welcome');
-});
+// Route::get('/', function () {
+//     return view('admin.welcome');
+// });
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
@@ -39,8 +39,8 @@ Route::middleware('auth:admin')->group(function () {
 });
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-                ->name('register');
+    // Route::get('register', [RegisteredUserController::class, 'create'])
+    //             ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
@@ -84,6 +84,6 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
-    Route::resource('owners',OwnersController::class);
+    Route::resource('owners',OwnersController::class)->except(['show']);
 });
 

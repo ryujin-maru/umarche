@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Owner;
+use App\Models\Shop;
 use Carbon\Carbon;
 use Illuminate\support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Throwable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class OwnersController extends Controller
 {
@@ -53,11 +57,27 @@ class OwnersController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults(),'min:8'],
         ]);
 
-        $owner = new Owner;
-        $owner->name = $request->name;
-        $owner->email = $request->email;
-        $owner->password = Hash::make($request->name);
-        $owner->save();
+        try{
+            DB::transaction(function () use($request) {
+                $owner = new Owner;
+                $owner->name = $request->name;
+                $owner->email = $request->email;
+                $owner->password = Hash::make($request->name);
+                $owner->save();
+
+                $shop = new Shop;
+                $shop->owner_id = $owner->id;
+                $shop->name = '';
+                $shop->information = '店名を入力してください';
+                $shop->filename = '';
+                $shop->is_selling = true;
+                $shop->save();
+            },2);
+
+        }catch(Throwable $e) {
+            Log::error($e);
+            throw $e;
+        }
 
         return redirect()->route('admin.owners.index')->with(['message'=>'オーナー登録を実施しました。','status'=>'info']);
     }
@@ -81,7 +101,7 @@ class OwnersController extends Controller
      */
     public function edit($id)
     {
-        $owner = Owner::findOrFail($id);
+        $owner = Owner::with('shop')->findOrFail($id);
         return view('admin.owners.edit',compact('owner'));
     }
 

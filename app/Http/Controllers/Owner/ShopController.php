@@ -12,6 +12,7 @@ class ShopController extends Controller
     //
     public function __construct()
     {
+        // ログインしているかの確認
         $this->middleware('auth:owners');
 
         $this->middleware(function($request,$next) {
@@ -27,8 +28,7 @@ class ShopController extends Controller
 
     public function index()
     {
-        $ownerId = Auth::id();
-        $shops = Shop::where('owner_id',$ownerId)->get();
+        $shops = Shop::where('owner_id',Auth::id())->get();
 
         return view('owner.shops.index',compact('shops'));
     }

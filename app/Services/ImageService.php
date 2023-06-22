@@ -8,7 +8,12 @@ class ImageService
 {
 
     public static function upload($imageFile,$folderName) {
-        $fileName = Storage::putFile('public/'.$folderName.'/',$imageFile);
+        if(is_array($imageFile)) {
+            $file = $imageFile['image'];
+        }else{
+            $file = $imageFile;
+        }
+        $fileName = Storage::putFile('public/'.$folderName.'/',$file);
         return basename($fileName);
     }
 }

@@ -17,7 +17,8 @@ class ImagesController extends Controller
         $this->middleware(function($request,$next) {
             $id = $request->route('image');
             if(!is_null($id)) {
-                if(Auth::id() !== intval($id)) {
+                $imagesOwnerId = Image::findOrFail($id)->owner->id;
+                if(Auth::id() !== intval($imagesOwnerId)) {
                     abort(404);
                 }
             }
@@ -73,17 +74,6 @@ class ImagesController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -91,7 +81,8 @@ class ImagesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $image = Image::findOrFail($id);
+        return view('owner.images.edit',compact('image'));
     }
 
     /**
@@ -103,7 +94,15 @@ class ImagesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'title' => 'string|max:50',
+        ]);
+
+        $image = Image::findOrFail($id);
+        $image->title = $request->title;
+        $image->save();
+
+        return to_route('owner.images.index')->with(['message'=>'画像登録しました。','status'=>'info']);
     }
 
     /**

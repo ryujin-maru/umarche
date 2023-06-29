@@ -39,7 +39,7 @@ Route::prefix('shops')->
 
 Route::resource('images',ImagesController::class)->except(['show'])->middleware('auth:owners');
 
-Route::resource('product',ProductController::class)->middleware('auth:owner')->except('show');
+Route::resource('product',ProductController::class)->middleware('auth:owners')->except(['show']);
 
 Route::get('/dashboard', function () {
     return view('owner.dashboard');

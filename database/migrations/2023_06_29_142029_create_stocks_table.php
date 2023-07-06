@@ -15,6 +15,12 @@ return new class extends Migration
     {
         Schema::create('t_stocks', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->text('information');
+            $table->unsignedInteger('price');
+            $table->boolean('is_selling');
+            $table->integer('sort_order')->nullable();
+            $table->foreignId('shop_id');
             $table->foreignId('product_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->tinyInteger('type');
             $table->integer('quantity');

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\ItemController;
+use App\Http\Controllers\User\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,11 @@ Route::middleware('auth:users')->group(function () {
 Route::middleware('auth:users')->group(function () {
     Route::get('/',[ItemController::class,'index'])->name('items.index');
     Route::get('/items/{item}',[ItemController::class,'show'])->name('items.show');
+});
+
+Route::prefix('cart')->middleware('auth:users')->group(function() {
+    Route::get('/',[CartController::class,'index'])->name('cart.index');
+    Route::post('add',[CartController::class,'add'])->name('cart.add');
 });
 
 

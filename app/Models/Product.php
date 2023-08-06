@@ -47,4 +47,8 @@ class Product extends Model
     public function stock() {
         return $this->hasMany(Stock::class);
     }
+
+    public function users() {
+        return $this->belongsToMany(User::class,'carts')->withPivot(['id','quantity']);
+    }
 }

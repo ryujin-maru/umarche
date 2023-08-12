@@ -47,4 +47,33 @@ class CartController extends Controller
         Cart::where('product_id',$id)->where('user_id',Auth::id())->delete();
         return to_route('user.cart.index');
     }
+
+    public function checkout() {
+        $user = User::findOrFail(Auth::id());
+        $products = $user->products;
+
+        $lineItems = [];
+        foreach($products as $product) {
+            $lineItem = [
+                'name' => $product->name,
+                'description' => $product->information,
+                'amount' => $product->price,
+                'currency' => 'jpy',
+                'quantity' => $product->pivot->quantity,
+            ];
+
+            array_push($lineItems,$lineItem);
+        }
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+        $session = \Stripe\Checkout\Session::create([
+            'line_items' => [$lineItems],
+            'mode' => 'payment',
+            'success_url' => route('user.items.index'),
+            'cancel_url' => route('user.cart.index'),
+        ]);
+
+        $publicKey = env('STRIPE_PUBLIC_KEY');
+        return view('user.checkout',compact('session','publicKey'));
+    }
 }

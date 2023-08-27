@@ -62,10 +62,14 @@ class CartController extends Controller
                 return to_route('user.cart.index');
             }else{
                 $lineItem = [
-                    'name' => $product->name,
-                    'description' => $product->information,
-                    'amount' => $product->price,
-                    'currency' => 'jpy',
+                    'price_data' => [
+                        'currency' => 'jpy',
+                        'unit_amount' => $product->price,
+                        'product_data' => [
+                            'name' => $product->name,
+                            'description' => $product->information,
+                        ],
+                    ],
                     'quantity' => $product->pivot->quantity,
                 ];
                 array_push($lineItems,$lineItem);
@@ -80,18 +84,38 @@ class CartController extends Controller
             ]);
         }
 
-        dd('test');
+        // dd('test');
 
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 
         $session = \Stripe\Checkout\Session::create([
             'line_items' => [$lineItems],
             'mode' => 'payment',
-            'success_url' => route('user.items.index'),
-            'cancel_url' => route('user.cart.index'),
+            'success_url' => route('user.cart.success'),
+            'cancel_url' => route('user.cart.cancel'),
         ]);
 
         $publicKey = env('STRIPE_PUBLIC_KEY');
         return view('user.checkout',compact('session','publicKey'));
+    }
+
+    public function success() {
+        Cart::where('user_id',Auth::id())->delete();
+
+        return to_route('user.items.index');
+    }
+
+    public function cancel() {
+        $user = User::findOrFail(Auth::id());
+
+        foreach($user->products as $product) {
+            Stock::create([
+                'product_id' => $product->id,
+                'type' => \Constant::PRODUCT_LIST['add'],
+                'quantity' => $product->pivot->quantity
+            ]);
+        }
+
+        return to_route('user.cart.index');
     }
 }

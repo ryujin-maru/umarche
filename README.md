@@ -39,3 +39,13 @@ storage/app/public/productsフォルダ内に
 storage/app/public/shopsフォルダを作成し
 画像を保存してください。
 
+## section7の補足
+決済のテストとしてstripeを利用しています。 必要な場合は .env にstripeの情報を追記してください。 (講座内で解説しています)
+
+## section8の補足
+メールのテストとしてmailtrapを利用しています。 必要な場合は .env にmailtrapの情報を追記してください。 (講座内で解説しています)
+
+メール処理には時間がかかるので、 キューを使用しています。
+
+必要な場合は php artisan queue:workで ワーカーを立ち上げて動作確認するようにしてください。 (講座内で解説しています)
+

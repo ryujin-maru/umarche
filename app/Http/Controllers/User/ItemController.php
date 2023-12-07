@@ -32,7 +32,7 @@ class ItemController extends Controller
     public function index(Request $request) {
         // dd($request);
         //非同期
-        SendThanksMail::dispatch();
+        // SendThanksMail::dispatch();
         $categories = PrimaryCategory::with('secondary')->get();
         $products = Product::availableItem()
         ->selectCategory($request->category ?? '0')
